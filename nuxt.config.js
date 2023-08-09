@@ -37,12 +37,14 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    // https://auth.nuxtjs.org/guide/setup
+    '@nuxtjs/auth-next',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    baseURL: 'http://127.0.0.1:8000',
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -73,4 +75,43 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+
+  auth: {
+    strategies: {
+      local: {
+        scheme: 'refresh',
+        localStorage: {
+          prefix: 'auth.'
+        },
+        token: {
+          prefix: 'access_token.',
+          property: 'access',
+          maxAge: 60,
+          global: true,
+        },
+        refreshToken: {
+          prefix: 'refresh_token.',
+          property: 'refresh',
+          data: 'refresh',
+          maxAge: 60 * 60 * 24 * 15
+        },
+        user: {
+          property: 'user',
+          autoFetch: true
+        },
+        endpoints: {
+          login: {url: '/api/token/', method: 'post'},
+          refresh: {url: '/api/token/refresh/', method: 'post'},
+          user: {url: '/api/v1/user/', method: 'get'},
+          logout: {url: '/api/v1/user_logout/', method: 'post'}
+        },
+        redirect: {
+          login: '/lk',
+          logout: '/',
+          callback: '/',
+          home: '/'
+        }
+      }
+    }
+  },
 }
